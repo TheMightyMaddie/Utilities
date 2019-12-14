@@ -1,0 +1,89 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Needle : MonoBehaviour
+{
+    [Range(0.1f, 10)]
+    public float speed = 1;
+    public Color cleanColor;
+    public Color dirtyColor;
+    private Color lerpedColor;
+
+    public GameObject Head;
+    public GameObject Torso;
+    public GameObject LeftLeg;
+    public GameObject RightLeg;
+    public GameObject LeftArm;
+    public GameObject RightArm;
+
+    private bool changeColor;
+    private GameObject targetObject;
+    private float counter = 0.0f;
+
+    private List<GameObject> bodyParts = new List<GameObject>();
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        bodyParts.Add(Head);
+        bodyParts.Add(Torso);
+        bodyParts.Add(LeftLeg);
+        bodyParts.Add(RightLeg);
+        bodyParts.Add(LeftArm);
+        bodyParts.Add(RightArm);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (changeColor)
+        {
+            counter += Time.deltaTime;
+            Renderer renderer = targetObject.GetComponent<Renderer>();
+            lerpedColor = Color.Lerp(renderer.material.color, cleanColor, speed * counter);
+            //ChangeColor();
+            renderer.material.color = lerpedColor;
+            Debug.Log(targetObject.name + " " + targetObject.GetComponent<Renderer>().material.color + " == myColor");
+            if (counter > 1)
+            {
+                counter = 0;
+                changeColor = false;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Needle Poke");
+        if (bodyParts.Contains(other.gameObject))
+        {
+
+            Debug.Log("Needle Super Poke");
+            targetObject = other.gameObject;
+            changeColor = true;
+
+        }
+        else
+        {
+            changeColor = false;
+            targetObject = null;
+        }
+    }
+    IEnumerator changeColorCor()
+    {
+        for (int i = 0; i < 15; i++)
+        {
+            yield return new WaitForSeconds(.1f);
+
+        }
+
+    }
+    private void ChangeColor()
+    {
+        Debug.Log("WORK DAMMIT");
+        Renderer renderer = targetObject.GetComponent<Renderer>();
+        renderer.material.color = lerpedColor;
+        Debug.Log(renderer.material.color);
+    }
+}
