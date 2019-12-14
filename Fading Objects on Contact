@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DirtPatch : MonoBehaviour
+{
+    public AudioClip cleanedUpSound;
+    //public int collisionNumber = 4;
+    private Collider col;
+
+    void Start()
+    {
+        col = GetComponent<Collider>();
+    }
+
+
+    void Update()
+    {
+        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Collision");
+        if (other.GetComponent<Hand>())
+        {
+            Renderer renderer = transform.GetComponent<Renderer>();
+            Color currentColor = renderer.material.color;
+            renderer.material.SetColor("_Color", new Color(renderer.material.color.r, renderer.material.color.b, renderer.material.color.g, renderer.material.color.a - 0.2f));
+            if (renderer.material.color.a < 0.2f)
+            {
+                Destroy(gameObject);
+                GameObject.Find("/GlobalAudioSource").GetComponent<AudioSource>().PlayOneShot(cleanedUpSound);
+            }
+        }
+    }
+}
